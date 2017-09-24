@@ -1,4 +1,6 @@
 # 线性回归
+import tensorflow as tf
+import numpy as np
 
 #  创建网络结构
 x_data = np.random.rand(100).astype(np.float32)
