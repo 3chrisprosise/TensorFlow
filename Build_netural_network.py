@@ -11,7 +11,7 @@ def add_layer(inputs, insize, outsize, n_layer,activation_function):
     with tf.name_scope(layer_name):
         with tf.name_scope('weights'):
             Weights= tf.Variable(tf.random_normal([insize,outsize]))
-            tf.summary.histogram(layer_name+'/weights', Weights)
+            tf.summary.histogram(layer_name+'/weights', Weights) # 总结过程
         with tf.name_scope('biases'):
             biasis = tf.Variable(tf.zeros([1, outsize]) + 0.1)  #
             tf.summary.histogram(layer_name+'/biases', biasis)
@@ -38,17 +38,19 @@ with tf.name_scope('inputs'):
 
 lay1 = add_layer(xs, 1, 10, n_layer=1, activation_function=tf.nn.relu)
 prediction = add_layer(lay1, 10, 1, n_layer=2, activation_function=None)
+
 with tf.name_scope('loss'):
     loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),
                           reduction_indices=[1]))# 检测方差？ reduce_mean  求平均值
-    tf.summary.scalar('loss',loss)
+    tf.summary.scalar('loss',loss)  # 纯量的变化
+
 with tf.name_scope('train'):
 # 选择训练函数  梯度下降
     train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)
 
 init = tf.initialize_all_variables()
 with tf.Session() as sess:
-    merged = tf.summary.merge_all()
+    merged = tf.summary.merge_all()  #  合并所有的总结图像
     writer = tf.summary.FileWriter('sum', sess.graph)
     sess.run(init)
     fig = plt.figure()
@@ -56,12 +58,14 @@ with tf.Session() as sess:
     ax.scatter(x_data, y_data)
     plt.ion()  # show 的时候不暂停
     plt.show()
-    for i in range(1000):
+    for i in range(10000):
         sess.run(train_step, feed_dict={xs: x_data, ys: y_data})
-        if i % 50:
-            print(sess.run(loss, feed_dict={xs: x_data, ys: y_data}))
-            result = sess.run(merged,feed_dict={xs: x_data, ys: y_data})
-            writer.add_summary(result,i)
+        if i % 50 == 0:
+            print(sess.run(loss,
+                           feed_dict={xs: x_data, ys: y_data}))
+            result = sess.run(merged,
+                              feed_dict={xs: x_data, ys: y_data})
+            writer.add_summary(result, i)
             try:
                 ax.lines.remove(lines[0])
             except Exception:
@@ -70,4 +74,4 @@ with tf.Session() as sess:
             lines = ax.plot(x_data,prediction_value, 'r-', lw=5)
             plt.pause(0.01)
 
-#  在tensorboard中显示内容 tensorboard --logdir=''  引号中填写生成的board文件所在的文件夹
+#  在tensorboard中显示内容 tensorboard --logdir=''  引号中填写生成的board文件所在的文件夹,写路径要用 \\  单个表示转义
