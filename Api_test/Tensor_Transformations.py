@@ -24,7 +24,23 @@ t = tf.reshape(t,[3,3])  # reshape a tensor to a shape that gived as tenser give
 t = tf.reshape(t,[-1])   # flat a tensor into a liner tensor of type as tenser gived
 
 t = np.array([1.0,2.0,3.0],)  # 这边有问题！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
-shape = tf.shape(t)   # 删除其中维度为 1 的张量
-squeeze = tf.squeeze(shape)
+shape = tf.shape(t)
+squeeze = tf.squeeze(shape)   # 删除其中维度为 1 的张量,存在疑问，之后解决
+
+t = np.array([[2,1],[3,2]])
+print(t)
+t = tf.expand_dims(t,2)
+shape = tf.shape(t)
+print(t)
+
+t = np.array([[[1, 1, 1], [2, 2, 2]],
+             [[3, 3, 3], [4, 4, 4]],
+             [[5, 5, 5], [6, 6, 6]]])
+t = tf.to_int32(t)
+shape = tf.shape(t)
+
+t = tf.slice(t,[0,0,0],[1,0,2])  # 切片操作，输入数组为三维 3*2*3 ，前面一个列表用于计数，后面用于切片取片
+
 with tf.Session() as Sess:
+    print(Sess.run(t))
     print(Sess.run(shape))
